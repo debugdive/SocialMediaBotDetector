@@ -1,0 +1,45 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background: #fafafa; color: #262626; }
+
+/* NAVBAR */
+.navbar { height: 60px; background: #fff; border-bottom: 1px solid #dbdbdb; position: sticky; top: 0; z-index: 10; display: flex; justify-content: center; }
+.nav-wrapper { max-width: 900px; width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+.brand { font-size: 24px; font-weight: bold; color: #E1306C; text-decoration: none; font-family: cursive;}
+.tabs { display: flex; gap: 30px; }
+.tab-link { text-decoration: none; color: #262626; font-size: 18px; font-weight: 600; padding: 5px 10px; border-radius: 5px; transition: 0.2s;}
+.tab-link:hover { background: #f0f0f0; }
+
+/* CONTAINER */
+.container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+
+/* FEED POSTS */
+.post { background: #fff; border: 1px solid #dbdbdb; border-radius: 8px; margin-bottom: 30px; overflow: hidden; }
+.post-header { padding: 15px; display: flex; align-items: center; gap: 15px; font-weight: bold; cursor: pointer; text-decoration: none; color: black; }
+.post-header:hover { background: #f9f9f9; }
+.post-header i { font-size: 24px; color: #888; }
+.post-img { width: 100%; max-height: 600px; object-fit: cover; cursor: pointer; }
+.post-caption { padding: 15px; font-size: 15px; }
+
+/* PROFILE PAGE */
+.profile-header { display: flex; gap: 60px; margin-bottom: 40px; align-items: center; }
+.profile-pic { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid #E1306C; padding: 3px; }
+.profile-info { flex: 1; }
+.username-row { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; }
+.username { font-size: 28px; font-weight: 300; }
+.stats { display: flex; gap: 30px; margin-bottom: 20px; list-style: none; font-size: 16px; }
+.stat-bold { font-weight: 600; }
+.bio { font-size: 15px; line-height: 1.5; }
+
+/* BUTTONS & FORMS */
+.btn-scan { background: #0095f6; color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; }
+.btn-scan:hover { background: #1877f2; }
+.btn-back { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #0095f6; font-weight: bold; }
+
+.scanner-box { background: white; padding: 40px; border-radius: 8px; border: 1px solid #dbdbdb; text-align: center; }
+.scanner-box textarea { width: 100%; height: 150px; margin: 20px 0; padding: 15px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; resize: none;}
+
+/* MODAL */
+.modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index: 100; }
+.modal-content { background: white; padding: 30px; border-radius: 12px; width: 400px; text-align: center; }
+.modal-content h2 { margin-bottom: 15px; }
+.close-btn { background: #dbdbdb; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 20px; width: 100%; }

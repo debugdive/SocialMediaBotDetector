@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Scanner UI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-wrapper">
+            <h2 style="font-family: Arial; margin-top: 10px;">InstaScanner Pro</h2>
+            <div class="nav-items">
+                <i class="fas fa-home"></i>
+                <i class="fab fa-facebook-messenger"></i>
+                <i class="far fa-compass"></i>
+                <i class="far fa-heart"></i>
+                <i class="fas fa-user-circle"></i>
+            </div>
+        </div>
+    </nav>
+
+    <header class="profile-header">
+        <div class="profile-container">
+            <div class="profile-pic">
+                <img src="https://i.pravatar.cc/300?img=47" alt="Profile Picture">
+            </div>
+            <div class="profile-info">
+                <div class="profile-title">
+                    <h2 class="username">@unknown_user_99</h2>
+                    <button class="scan-btn" onclick="runScan('profile')">
+                        <i class="fas fa-robot"></i> SCAN ENTIRE ACCOUNT
+                    </button>
+                </div>
+                <ul class="profile-stats">
+                    <li><span class="stat-count">6</span> posts</li>
+                    <li><span class="stat-count">4.5K</span> followers</li>
+                    <li><span class="stat-count">850</span> following</li>
+                </ul>
+                <div class="profile-bio">
+                    <p class="bio-name">Unknown Person</p>
+                    <p class="bio-text">✨ Living my best life!<br>📍 New York City<br>🔗 <a href="#">click.me/free_crypto</a></p>
+                    <p style="color: gray; font-size: 13px; margin-top: 15px;"><i class="fas fa-mouse-pointer"></i> Click on any image below to scan it for Deepfakes!</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- The fake post gallery with ONCLICK events to scan them! -->
+        <div class="gallery">
+            <div class="gallery-item" onclick="scanImage(1)">
+                <img src="https://picsum.photos/400?random=1" alt="Post">
+                <div class="overlay"><i class="fas fa-search"></i> SCAN IMAGE</div>
+            </div>
+            <div class="gallery-item" onclick="scanImage(2)">
+                <img src="https://picsum.photos/400?random=2" alt="Post">
+                <div class="overlay"><i class="fas fa-search"></i> SCAN IMAGE</div>
+            </div>
+            <div class="gallery-item" onclick="scanImage(3)">
+                <img src="https://picsum.photos/400?random=3" alt="Post">
+                <div class="overlay"><i class="fas fa-search"></i> SCAN IMAGE</div>
+            </div>
+            <div class="gallery-item" onclick="scanImage(4)">
+                <img src="https://picsum.photos/400?random=4" alt="Post">
+                <div class="overlay"><i class="fas fa-search"></i> SCAN IMAGE</div>
+            </div>
+            <div class="gallery-item" onclick="scanImage(5)">
+                <img src="https://picsum.photos/400?random=5" alt="Post">
+                <div class="overlay"><i class="fas fa-search"></i> SCAN IMAGE</div>
+            </div>
+            <div class="gallery-item" onclick="scanImage(6)">
+                <img src="https://picsum.photos/400?random=6" alt="Post">
+                <div class="overlay"><i class="fas fa-search"></i> SCAN IMAGE</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- The Popup that shows the AI Result -->
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Scanning...</h2>
+            <p id="modalMessage">Please wait while the AI analyzes the account.</p>
+            <div class="loader" id="loader"></div>
+            <button class="close-btn" id="closeBtn" onclick="closeModal()" style="display:none;">Close</button>
+        </div>
+    </div>
+
+    <script>
+        function showModal(titleText, msgText) {
+            document.getElementById('resultModal').style.display = 'flex';
+            document.getElementById('modalTitle').innerHTML = titleText;
+            document.getElementById('modalTitle').style.color = 'black';
+            document.getElementById('modalMessage').innerText = msgText;
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('closeBtn').style.display = 'none';
+        }
+
+        function handleResponse(data) {
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('closeBtn').style.display = 'block';
+            if(data.status === 'danger') {
+                document.getElementById('modalTitle').innerHTML = '🚨 AI THREAT DETECTED';
+                document.getElementById('modalTitle').style.color = '#ed4956';
+            } else {
+                document.getElementById('modalTitle').innerHTML = '✅ SAFE / VERIFIED';
+                document.getElementById('modalTitle').style.color = '#3897f0';
+            }
+            document.getElementById('modalMessage').innerText = data.message;
+        }
+
+        // Scans the whole profile
+        function runScan() {
+            showModal('🤖 Scanning Entire Account...', 'Analyzing profile picture, behavior, and bio texts...');
+            fetch('/scan_profile', { method: 'POST' })
+            .then(res => res.json())
+            .then(data => handleResponse(data));
+        }
+
+        // Scans a specific image!
+        function scanImage(imageId) {
+            showModal('📸 Scanning Photo...', 'Running Deepfake Computer Vision analysis on Image ' + imageId + '...');
+            fetch('/scan_image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image_id: imageId })
+            })
+            .then(res => res.json())
+            .then(data => handleResponse(data));
+        }
+
+        function closeModal() {
+            document.getElementById('resultModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

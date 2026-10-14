@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <a href="/" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Feed</a>
+    
+    <div class="profile-header">
+        <img src="{{ user.pic }}" class="profile-pic" alt="Profile">
+        <div class="profile-info">
+            <div class="username-row">
+                <h2 class="username">@{{ user.username }}</h2>
+                <button class="btn-scan" onclick="scanBot('{{ user.id }}')"><i class="fas fa-robot"></i> RUN AI BOT SCAN</button>
+            </div>
+            <ul class="stats">
+                <li><span class="stat-bold">{{ user.posts }}</span> posts</li>
+                <li><span class="stat-bold">{{ user.followers }}</span> followers</li>
+                <li><span class="stat-bold">{{ user.following }}</span> following</li>
+            </ul>
+            <p class="bio"><strong>{{ user.username }}</strong><br>{{ user.bio }}</p>
+        </div>
+    </div>
+
+    <script>
+        function scanBot(userId) {
+            // Tell the backend to run the NLP Bot Detector on this user
+            fetch('/api/scan_bot/' + userId, { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                showResult(
+                    data.status === 'danger' ? '🚨 BOT DETECTED' : '✅ REAL HUMAN', 
+                    data.message, 
+                    data.status === 'danger'
+                );
+            });
+        }
+    </script>
+{% endblock %}

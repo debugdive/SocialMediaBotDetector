@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InstaAI Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-wrapper">
+            <a href="/" class="brand">InstaAI</a>
+            <div class="tabs">
+                <a href="/" class="tab-link"><i class="fas fa-home"></i> Feed</a>
+                <a href="/info_scanner" class="tab-link"><i class="fas fa-search"></i> Fake News Scanner</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- This is where the specific page content gets injected! -->
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Global Modal for AI Results -->
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Scanning...</h2>
+            <p id="modalMessage">Please wait...</p>
+            <button class="close-btn" id="closeBtn" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        function showResult(title, message, isDanger) {
+            const modal = document.getElementById('resultModal');
+            document.getElementById('modalTitle').innerHTML = title;
+            document.getElementById('modalTitle').style.color = isDanger ? '#ed4956' : '#3897f0';
+            document.getElementById('modalMessage').innerText = message;
+            modal.style.display = 'flex';
+        }
+        function closeModal() {
+            document.getElementById('resultModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="scanner-box">
+        <h2 style="margin-bottom: 10px;"><i class="fas fa-newspaper"></i> Fake News & Info Scanner</h2>
+        <p style="color: gray;">Paste any story, caption, or news text below. Our AI Natural Language Processor will scan the text patterns to determine if it is fake news.</p>
+        
+        <textarea id="newsText" placeholder="Paste the story or information here... (Try pasting 'The earth is flat and scientists are hiding the truth' vs 'Water is essential for human hydration')"></textarea>
+        
+        <button class="btn-scan" style="font-size: 18px; padding: 12px 30px;" onclick="scanInfo()">
+            <i class="fas fa-search"></i> VERIFY INFORMATION
+        </button>
+    </div>
+
+    <script>
+        function scanInfo() {
+            const text = document.getElementById('newsText').value;
+            if(!text) return alert("Please paste some text first!");
+
+            // Send the text to the Fake News ML Model in the Python backend
+            fetch('/api/scan_info', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: text })
+            })
+            .then(res => res.json())
+            .then(data => {
+                showResult(
+                    data.status === 'danger' ? '🚨 FAKE NEWS DETECTED' : '✅ INFORMATION VERIFIED', 
+                    data.message, 
+                    data.status === 'danger'
+                );
+            });
+        }
+    </script>
+{% endblock %}

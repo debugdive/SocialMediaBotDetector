@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2 style="margin-bottom: 20px;">Your Feed</h2>
+    <p style="color: gray; margin-bottom: 30px;">Click on any picture or username below to visit their profile and scan them!</p>
+
+    <!-- Loop through the database of posts -->
+    {% for post in posts %}
+    <div class="post">
+        <a href="/profile/{{ post.user_id }}" class="post-header">
+            <i class="fas fa-user-circle"></i>
+            <span>{{ post.username }}</span>
+        </a>
+        <a href="/profile/{{ post.user_id }}">
+            <img src="{{ post.image }}" class="post-img" alt="Post Image">
+        </a>
+        <div class="post-caption">
+            <strong>{{ post.username }}</strong> {{ post.caption }}
+        </div>
+    </div>
+    {% endfor %}
+{% endblock %}
