@@ -1,17 +1,24 @@
-{
+<escape>{
   "manifest_version": 3,
   "name": "InstaAI Bot & News Detector",
-  "version": "3.0",
-  "description": "Scans Instagram profiles and verifies highlighted Fake News anywhere.",
+  "version": "3.1",
+  "description": "Scans Instagram profiles and analyzes highlighted text for possible fake news.",
   "permissions": ["activeTab"],
-  "host_permissions": ["<all_urls>", "http://127.0.0.1:5000/*"],
+  "host_permissions": [
+    "https://www.instagram.com/*",
+    "https://instagram.com/*",
+    "http://127.0.0.1:5000/*"
+  ],
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": [
+        "https://www.instagram.com/*",
+        "https://instagram.com/*"
+      ],
       "js": ["content.js"]
     }
   ]
-}
+}</escape>
