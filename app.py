@@ -1,3 +1,4 @@
+```python
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -8,96 +9,234 @@ app = Flask(__name__)
 CORS(app)
 
 # ==========================================
-# MACHINE LEARNING MODELS (Trained on startup)
+# 1. DEMO FAKE-NEWS CLASSIFIER
 # ==========================================
+
 fake_news_data = [
-    "The earth is flat and scientists are hiding the truth.", 
-    "NASA confirms the earth is a globe.", 
-    "Drinking bleach cures all viruses instantly!", 
-    "Water is essential for human hydration.",
-    "Aliens built the pyramids and run the government.",
-    "The stock market closed at an all-time high today.",
-    "5G towers are spreading diseases into our brains.",
-    "New study shows regular exercise improves heart health."
+    "The earth is flat and scientists are hiding the truth",
+    "A secret cure is being hidden from everyone",
+    "Breaking news: a celebrity is secretly an alien",
+    "A conspiracy claims that the moon is artificial",
+    "The government is hiding all scientific discoveries",
+    "Scientists publish research on climate change",
+    "The university announced a new research program",
+    "The health department released its annual report",
+    "Researchers published findings in a scientific journal",
+    "The city council announced a public meeting"
 ]
-fake_news_labels = [1, 0, 1, 0, 1, 0, 1, 0] # 1 is Fake, 0 is Real
-news_ai_model = make_pipeline(TfidfVectorizer(), LogisticRegression())
+
+fake_news_labels = [
+    1, 1, 1, 1, 1,
+    0, 0, 0, 0, 0
+]
+
+news_ai_model = make_pipeline(
+    TfidfVectorizer(),
+    LogisticRegression(max_iter=1000)
+)
+
 news_ai_model.fit(fake_news_data, fake_news_labels)
 
-# ==========================================
-# MOCK DATABASE (For the web-based Instagram clone)
-# ==========================================
-USERS = {
-    "1": {"id": "1", "username": "sara_travels", "followers": 850, "following": 400, "posts": 120, "bio": "Student at university, love traveling.", "pic": "https://i.pravatar.cc/150?img=5"},
-    "2": {"id": "2", "username": "crypto_king99", "followers": 10500, "following": 2, "posts": 1000, "bio": "Click the link below for FREE crypto and thousands of dollars!", "pic": "https://i.pravatar.cc/150?img=12"},
-    "3": {"id": "3", "username": "john_doe_nyc", "followers": 150, "following": 200, "posts": 45, "bio": "Just a normal person living life.", "pic": "https://i.pravatar.cc/150?img=11"}
-}
 
-POSTS = [
-    {"user_id": "1", "username": "sara_travels", "image": "https://picsum.photos/400?random=11", "caption": "Beautiful sunset in Paris!"},
-    {"user_id": "2", "username": "crypto_king99", "image": "https://picsum.photos/400?random=12", "caption": "EARN BIG MONEY NOW! DM ME!"},
-    {"user_id": "3", "username": "john_doe_nyc", "image": "https://picsum.photos/400?random=13", "caption": "Great lunch with friends."}
+# ==========================================
+# 2. DEMO INSTAGRAM FEED
+# ==========================================
+
+USERS = [
+    {
+        "username": "demo_user",
+        "name": "Demo User"
+    }
 ]
 
-# Web Routes (Standalone Instagram clone)
+POSTS = [
+    {
+        "username": "demo_user",
+        "caption": "Welcome to the Social Media Bot and AI Detection Suite demo!"
+    }
+]
+
+
+# ==========================================
+# 3. HOME PAGE
+# ==========================================
+
 @app.route('/')
 def feed():
     return render_template('feed.html', posts=POSTS)
 
-@app.route('/profile/<user_id>')
-def profile(user_id):
-    user = USERS.get(user_id)
-    if not user:
-        return "User not found", 404
-    return render_template('profile.html', user=user)
-
-@app.route('/info_scanner')
-def info_scanner():
-    return render_template('scanner.html')
-
-@app.route('/api/scan_bot/<user_id>', methods=['POST'])
-def scan_bot_web(user_id):
-    user = USERS.get(user_id)
-    if not user:
-        return jsonify({"status": "danger", "message": "User not found"})
-    if user["username"] == "crypto_king99":
-        return jsonify({"status": "danger", "message": "🚨 AI VERDICT: MALICIOUS BOT. Spam language and unnatural follower ratios detected."})
-    return jsonify({"status": "success", "message": "✅ AI VERDICT: REAL HUMAN. Profile statistics and bio are genuine."})
 
 # ==========================================
-# CHROME EXTENSION API ROUTES (For real Instagram & web scanner)
+# 4. INSTAGRAM EXTENSION SCANNER
 # ==========================================
+
 @app.route('/api/extension_scan', methods=['POST'])
 def extension_scan():
-    data = request.json or {}
-    username = data.get('username', '').lower()
-    page_text = data.get('text', '').lower()
-    
-    ai_keywords = ['ai-generated', 'robot', 'virtual influencer']
-    spam_keywords = ['free crypto', 'earn money', 'hot singles', 'click the link']
-    
-    if any(keyword in page_text for keyword in ai_keywords):
-        return jsonify({"status": "danger", "message": "Natural Language Processing found keywords indicating this is an AI-generated profile."})
-        
-    if any(keyword in page_text for keyword in spam_keywords):
-        return jsonify({"status": "danger", "message": "Profile text matches known spam/scam behaviors."})
-        
-    if username == "lilmiquela" or "miquela" in username:
-        return jsonify({"status": "danger", "message": "The Computer Vision algorithm scanned the images and found unnatural pixel smoothing. Verdict: AI-GENERATED."})
-         
-    return jsonify({"status": "success", "message": f"Account @{username} passed behavioral and visual checks. Real human."})
+    data = request.get_json(silent=True) or {}
+
+    username = str(
+        data.get('username', '')
+    ).strip().lstrip('@').lower()
+
+    page_text = str(data.get('text', '')).lower()
+
+    risk_score = 0
+    reasons = []
+
+    # Possible scam or spam wording
+    spam_keywords = [
+        'free crypto',
+        'earn money',
+        'hot singles',
+        'click the link',
+        'guaranteed profit',
+        'dm me',
+        'double your money',
+        'send money now'
+    ]
+
+    # AI disclosure or virtual influencer wording
+    ai_keywords = [
+        'ai-generated',
+        'virtual influencer',
+        'generated by ai',
+        'artificial intelligence generated'
+    ]
+
+    matched_spam = [
+        word for word in spam_keywords
+        if word in page_text
+    ]
+
+    matched_ai = [
+        word for word in ai_keywords
+        if word in page_text
+    ]
+
+    if matched_spam:
+        risk_score += 45
+        reasons.append(
+            "Potential promotional or scam-like wording detected: "
+            + ", ".join(matched_spam)
+        )
+
+    if matched_ai:
+        risk_score += 35
+        reasons.append(
+            "AI-related disclosure wording detected: "
+            + ", ".join(matched_ai)
+        )
+
+    risk_score = min(risk_score, 100)
+
+    if risk_score >= 40:
+        status = "danger"
+        risk_level = "HIGH"
+        message = (
+            "Potential risk signals detected. "
+            "Review this account carefully."
+        )
+    elif risk_score > 0:
+        status = "warning"
+        risk_level = "MEDIUM"
+        message = (
+            "Some indicators were detected. "
+            "More evidence is needed."
+        )
+    else:
+        status = "success"
+        risk_level = "NO_CONFIGURED_SIGNALS"
+        message = (
+            "No configured text risk indicators detected. "
+            "This does not prove the account is genuine."
+        )
+        reasons.append(
+            "No configured text risk indicators were found."
+        )
+
+    return jsonify({
+        "status": status,
+        "username": username,
+        "risk_score": risk_score,
+        "risk_level": risk_level,
+        "reasons": reasons,
+        "message": message,
+        "disclaimer": (
+            "Experimental keyword-based screening. "
+            "This is not proof that an account is genuine, "
+            "a bot, or AI-generated."
+        )
+    })
+
+
+# ==========================================
+# 5. FAKE-NEWS / TEXT SCANNER
+# ==========================================
 
 @app.route('/api/scan_info', methods=['POST'])
 def scan_info():
-    data = request.json or {}
-    text_to_scan = data.get('text', '')
+    data = request.get_json(silent=True) or {}
+
+    text_to_scan = str(data.get('text', '')).strip()
+
     if not text_to_scan:
-        return jsonify({"status": "danger", "message": "No text provided."})
-    prediction = news_ai_model.predict([text_to_scan])[0]
+        return jsonify({
+            "status": "danger",
+            "message": "No text provided.",
+            "prediction": None,
+            "confidence": None,
+            "disclaimer": "Enter text to run the experimental classifier."
+        }), 400
+
+    prediction = int(
+        news_ai_model.predict([text_to_scan])[0]
+    )
+
+    probabilities = news_ai_model.predict_proba(
+        [text_to_scan]
+    )[0]
+
+    confidence = round(
+        float(max(probabilities)) * 100, 2
+    )
+
     if prediction == 1:
-        return jsonify({"status": "danger", "message": "This text matches known false information, conspiracy theories, or unverified claims."})
+        status = "danger"
+        label = "Potential misinformation pattern"
+        message = (
+            "The text resembles examples labelled as misinformation "
+            "in the small demo dataset."
+        )
     else:
-        return jsonify({"status": "success", "message": "This information appears to be factual and safe based on current databases."})
+        status = "success"
+        label = "No matching misinformation pattern predicted"
+        message = (
+            "The text resembles examples labelled as non-misinformation "
+            "in the small demo dataset."
+        )
+
+    return jsonify({
+        "status": status,
+        "prediction": prediction,
+        "label": label,
+        "confidence": confidence,
+        "message": message,
+        "disclaimer": (
+            "This is a toy machine-learning model trained on a tiny "
+            "example dataset. Its prediction is not fact-checking, "
+            "and confidence is not a measure of factual truth."
+        )
+    })
+
+
+# ==========================================
+# 6. RUN APPLICATION
+# ==========================================
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000, use_reloader=False)
+    app.run(
+        debug=True,
+        port=5000,
+        use_reloader=False
+    )
+```
